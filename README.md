@@ -1,8 +1,10 @@
 # E_Test
 
-version : net6.0
-ORM : Entity Framework Core
-Programming/Tools : C# , HTML , Javascript
+==>version : net6.0
+
+==>ORM : Entity Framework Core
+
+==>Programming/Tools : C# , HTML , Javascript
 
 Back-End / API Development using .NET Core
 
