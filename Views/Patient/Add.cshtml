@@ -1,0 +1,225 @@
+﻿@model E_Test.Models.VM.PatientVM
+
+@{
+    ViewData["Title"] = "Add";
+}
+
+<h1>Add Patient</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-8">
+        <form asp-action="Add">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DiseaseInformation_Id" class="control-label"></label>
+                @Html.DropDownList("DiseaseInformation_Id", new SelectList(@ViewBag.disease, "Id", "Name"), new { onchange = "getAlldata()", @class = "form-control" })
+                <span asp-validation-for="DiseaseInformation_Id" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="has_Epilepsy" class="control-label"></label>
+                @Html.DropDownListFor(o => o.has_Epilepsy, Enum.GetValues(typeof(Epilepsy)).Cast<Epilepsy>().
+                         Select(x => new SelectListItem { Text = x.ToString(), Value = x.ToString() }),
+                         new { @class = "form-control" })
+                <span asp-validation-for="has_Epilepsy" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Allergy</label>
+                <div class="row">                   
+                    <div class="col-md-5">
+                        <select id="allergy_select_from" class="form-select" multiple aria-label="multiple select example">
+                            @foreach (var item in ViewBag.allergies)
+                            {
+                                <option value="@item.Id">@item.Name</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <input class="btn-sm-6" type="button" value="Add" class="btn btn-primary" onclick="addAllergies()" />
+                        <input class="btn-sm-6" type="button" value="Remove" class="btn btn-primary" onclick="removeAllergies()" />
+                    </div>
+                    <div class="col-md-5">
+                        <select id="allergy_select_to" class="form-select" multiple aria-label="multiple select example">
+                            @foreach (var item in Model.Allergies)
+                            {
+                                <option value="@item.Id">@item.Name</option>
+                            }                            
+                        </select>
+                        <table id="a_table" hidden>
+                            <thead>                                
+                            </thead>
+                            <tbody>
+                                @for (int i = 0; i < Model.Allergies.Count; i++)
+                                {
+                                    <tr>
+                                        <td>
+                                            @Html.EditorFor(x=>x.Allergies[i].Id)
+                                        </td>
+                                        <td>
+                                            @Html.EditorFor(x => x.Allergies[i].Name)
+                                        </td>
+                                    </tr>
+                                }
+                                
+                            </tbody>
+                            
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label">NCD</label>
+                <div class="row">
+                    <div class="col-md-5">
+                        <select id="ncd_select_from" class="form-select" multiple aria-label="multiple select example">
+                            @foreach (var item in ViewBag.ncds)
+                            {
+                                <option value="@item.Id">@item.Name</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <input class="btn-sm-6" type="button" value="Add" class="btn btn-primary" onclick="addNCD()" />
+                        <input class="btn-sm-6" type="button" value="Remove" class="btn btn-primary" onclick="removeNCD()" />
+                    </div>
+                    <div class="col-md-5">
+                        <select id="ncd_select_to" class="form-select" multiple aria-label="multiple select example">
+                            @foreach (var item in Model.NCDs)
+                            {
+                                <option value="@item.Id">@item.Name</option>
+                            }
+                        </select>
+                        <table id="n_table" hidden>
+                            <thead>                                
+                            </thead>
+                            <tbody>
+                                @for (int i = 0; i < Model.NCDs.Count; i++)
+                                {
+                                    <tr>
+                                        <td>
+                                            @Html.EditorFor(x => x.NCDs[i].Id)
+                                        </td>
+                                        <td>
+                                            @Html.EditorFor(x => x.NCDs[i].Name)
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+
+                    </div>
+
+                    
+                </div>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+<script>
+    function addAllergies() {
+        var a = document.getElementById('allergy_select_from'); 
+        var select = document.getElementById('allergy_select_to');
+        var opt = document.createElement('option');
+        opt.value = a.options[a.selectedIndex].value;
+        opt.innerHTML = a.options[a.selectedIndex].text;
+
+        var val, i ,isAdded = 0;
+        if (select.length == 0) {
+            //select.appendChild(opt);
+        } else {
+            for (i = 0; i < select.length; i++) {
+                val = select[i];
+                if (val.value == opt.value) {                    
+                    isAdded = 1;
+                    break;
+                } 
+            }            
+        }    
+
+        if (isAdded == 0) {
+            select.appendChild(opt);
+            var table = document.getElementById('a_table');
+            var rows = table.getElementsByTagName('tr');
+            var lastrowIdx = table.rows.length - 1;
+            var newrowIdx = lastrowIdx + 1;
+            var rowOuterHtml = '<tr><td>';
+            rowOuterHtml = rowOuterHtml + '<input class="text-box single-line" data - val="true" data - val - required="The Id field is required." id = "Allergies_' + newrowIdx + '__Id" name = "Allergies[' + newrowIdx + '].Id" type = "number" value = "' + opt.value + '" >';
+            rowOuterHtml = rowOuterHtml + '</td><td>';
+            rowOuterHtml = rowOuterHtml + '<input class="text-box single-line" data-val="true" data-val-required="The Name field is required." id="Allergies_' + newrowIdx + '__Name" name="Allergies[' + newrowIdx + '].Name" type="text" value="' + opt.innerHTML + '">';
+            rowOuterHtml = rowOuterHtml + '</td></tr>';
+            var newRow = table.insertRow();
+            newRow.innerHTML = rowOuterHtml;
+        } else {
+            alert("already added");
+        }
+        
+        
+    }
+    function removeAllergies() {      
+        var x = document.getElementById("allergy_select_to");
+        x.remove(x.selectedIndex);
+
+        document.getElementById('a_table').deleteRow(x.selectedIndex);
+    }
+    function addNCD() {
+        var a = document.getElementById('ncd_select_from')
+        var select = document.getElementById('ncd_select_to');
+        var opt = document.createElement('option');
+        opt.value = a.options[a.selectedIndex].value;
+        opt.innerHTML = a.options[a.selectedIndex].text;
+
+        var val, i, isAdded = 0;
+        if (select.length == 0) {
+            //select.appendChild(opt);
+        } else {
+            for (i = 0; i < select.length; i++) {
+                val = select[i];
+                if (val.value == opt.value) {
+                    isAdded = 1;
+                    break;
+                }
+            }            
+        }
+
+        if (isAdded == 0) {           
+
+            select.appendChild(opt);
+            var table = document.getElementById('n_table');
+            var rows = table.getElementsByTagName('tr');
+            var lastrowIdx = table.rows.length - 1;
+            var newrowIdx = lastrowIdx + 1;
+            var rowOuterHtml = '<tr><td>';
+            rowOuterHtml = rowOuterHtml + '<input class="text-box single-line" data - val="true" data - val - required="The Id field is required." id = "NCDs_' + newrowIdx + '__Id" name = "NCDs[' + newrowIdx + '].Id" type = "number" value = "' + opt.value + '" >';
+            rowOuterHtml = rowOuterHtml + '</td><td>';
+            rowOuterHtml = rowOuterHtml + '<input class="text-box single-line" data-val="true" data-val-required="The Name field is required." id="NCDs_' + newrowIdx + '__Name" name="NCDs[' + newrowIdx + '].Name" type="text" value="' + opt.innerHTML + '">';
+            rowOuterHtml = rowOuterHtml + '</td></tr>';
+            var newRow = table.insertRow();
+            newRow.innerHTML = rowOuterHtml;
+        } else {
+            alert("already added");
+        }
+    }
+    function removeNCD() {
+        var x = document.getElementById("ncd_select_to");
+        x.remove(x.selectedIndex);
+        document.getElementById('n_table').deleteRow(x.selectedIndex);
+
+    }
+</script>
