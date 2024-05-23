@@ -6,6 +6,8 @@
 
 ==>Programming/Tools : C# , HTML , Javascript
 
+==> Database backup file added to DB_FILE folder on source directory.
+
 Back-End / API Development using .NET Core
 
   ==> To develop this project code first approch is used to 
