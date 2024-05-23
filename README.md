@@ -10,6 +10,7 @@ Back-End / API Development using .NET Core
       create/update database informations.
 
   ==> Repository Pattern has been used here.
+  
         --> For common featurs access there will be found 
             IBaseRepository(Interface) and 
             BaseRepository(Implementation).
